@@ -27,7 +27,7 @@ canceledit.addEventListener('click',e=>{
 const deleteMemory = async (id,title)=>{
 console.log(id)
 const value = confirm("Are You Sure To Delete This Memory");
-const res = value && await axios.delete('http://localhost:3000/deletememory', {
+const res = value && await axios.delete('https://memorybackend-hfgz.onrender.com/deletememory', {
     params: {
       id: id,
       title:title
@@ -56,7 +56,7 @@ saveEdit?.addEventListener('click',async(e)=>{
 
 const getsinglememory = async(id)=>{
     console.log(id)
-    const res = await axios.get(`http://localhost:3000/getsinglememory/${id}`)
+    const res = await axios.get(`https://memorybackend-hfgz.onrender.com/getsinglememory/${id}`)
     console.log(res.data)
     arr= res.data.data
     previewimageEdit.src =  await res.data.data.memoryimageUrl
