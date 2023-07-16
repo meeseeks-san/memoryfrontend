@@ -15,18 +15,18 @@
     <header>
         <div class = "navbar">
                 <div class = "navbar-left">
-                    <h3 class = " logo">
+                    <!-- <h3 class = " logo">
                         ***LOGO***
-                    </h3>
+                    </h3> -->
 
                 </div>
                 <div class="navbar-right">
-                    <ul class = "navbar-element">
+                    <!-- <ul class = "navbar-element">
                         <a href="#"><li id=" home">Home</li></a>
                         <a href="#"><li id=" about"> About</li></a>
                         <a href="#"><li id=" services ">Services</li></a>
                         <a href="#"><li id=" contact ">Contact</li></a>
-                    </ul>
+                    </ul> -->
                 </div>  
         </div>
     </header>
@@ -298,9 +298,16 @@ const getsinglememory = async(id)=>{
         response?.data.data?.forEach((memory) => {
           var memoryDisplay = document.createElement("div");
           memoryDisplay.classList.add("memory-display");
+
+          //create image tag
+          var imagediv = document.createElement("div")
+          imagediv.classList.add("imagediv")
+
           var imageElement = document.createElement("img");
           imageElement.classList.add("memories-image");
           imageElement.src = memory.memoryimageUrl;
+
+          imagediv.append(imageElement)
 
           // Create the button div
           var buttonDiv = document.createElement("div");
@@ -340,7 +347,7 @@ const getsinglememory = async(id)=>{
           titleElement.textContent = memory.memoryTitle;
 
           // Append elements to the memory display div
-          memoryDisplay.appendChild(imageElement);
+          memoryDisplay.appendChild(imagediv);
           memoryDisplay.appendChild(buttonDiv);
           overlayDiv.appendChild(titleElement);
           memoryDisplay.appendChild(overlayDiv);
