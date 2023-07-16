@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="./style.css">
-  
-   
     <title>Homepage</title>
+    <!-- imported axios -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js" integrity="sha512-uMtXmF28A2Ab/JJO2t/vYhlaa/3ahUOgj1Zf27M5rOo8/+fcTUVH0/E0ll68njmjrLqOBjXM3V9NiPFL5ywWPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src = "./events.js"> </script>
+
 </head>
 <body>
-    <header>
+
+    <header>  
+        <!-- navigation started -->
         <div class = "navbar">
                 <div class = "navbar-left">
                     <!-- <h3 class = " logo">
@@ -29,29 +30,19 @@
                     </ul> -->
                 </div>  
         </div>
+        <!-- navigation ended -->
     </header>
    
     <div class = "card-container">
-         <!-- memory add card -->
+         <!-- memory new add card -->
         <div class = "memory-add">
             <img  class="avatar" src="avatar.png">
             <i class="fa-solid fa-plus fa-2xl"></i>
             <h2> Add Memories </h2>
         </div>
-        <!-- memory display card -->
-        <!-- <div class = "memory-display"> -->
-            <!-- <img src="mountain.jpg" class ="memories-image">
-            <div class="button-div">
-                <a><i id = "edit-button" class="fa-solid fa-pen-to-square fa-lg"></i></a>
-                <i id = "deletebutton" class="fa-solid fa-trash fa-lg"></i>
-            </div>
-            <div class="overlay">
-                <h2 class="memory-title"></h2> 
-            </div>  -->
-            
-        <!-- </div> -->
     </div>
 
+    <!-- dialog box for add memory -->
     <dialog  class="dialog-add">
         <div class = "container">
             <div class="container-image">
@@ -64,13 +55,12 @@
                 <i id = "cancel-button" class="fa-solid fa-xmark fa-xl"></i>
                 <button onclick="save()" style="background-color: transparent;border: none;">
                     <i id = "save-button" class="fa-solid fa-floppy-disk fa-xl"></i>
-                </button>
-                
-            </div>
-            
+                </button>  
+            </div> 
         </div>
-        
     </dialog>
+
+    <!-- dialog box for edit memory -->
     <dialog  class="dialog-edit">
       <div class = "container-edit">
           <div class="container-imagee-edit">
@@ -90,205 +80,204 @@
       </div>
    </dialog>
     
+  <!-- firebase initilization script -->
+  <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-storage.js"></script>
 
-<script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-storage.js"></script>
-
-<script >
-    var firebaseimageurl=null
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyCk-2gz9y_gG7xNxedxfLLXK-gKp_gQ9Mc",
-      authDomain: "memoryapp-29970.firebaseapp.com",
-      projectId: "memoryapp-29970",
-      storageBucket: "memoryapp-29970.appspot.com",
-      messagingSenderId: "652759473451",
-      appId: "1:652759473451:web:6522bf8dabd2487286796e"
-    };
-  
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-   const inputimage = document.querySelector(".input-image")
-   const previewtarget = document.querySelector(".preview") 
-   
-   inputimage.addEventListener('change',e=>{
-    e.preventDefault()
-    console.log(e.target.files[0])
-    const file = e.target.files[0];
-
-    if (file) {
-        previewtarget.src = URL.createObjectURL(file);
-         // Create a reference to the Firebase Storage bucket
-      var storageRef = firebase.storage().ref();
-      
-      // Create a child reference with a unique name
-      var imageRef = storageRef.child('images/' + file.name);
-      
-      // Upload the image file to Firebase Storage
-      imageRef.put(file)
-        .then(function(snapshot) {
-            // Observe upload progress if needed
-          var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log('Upload progress: ' + progress + '%');
-
-          snapshot.ref.getDownloadURL()
-            .then(function(downloadURL) {
-              console.log('Download URL:', downloadURL);
-              firebaseimageurl = downloadURL;
-            })
-        })
-        .catch(function(error) {
-          alert('Error uploading image:', error);
-        });
-      }   
-})
-async function save(){
-    let addinput = document.getElementsByClassName("title-input")
-    let inputvalue = addinput[0].value;
-
-    let imageurl = document
-   
-    inputvalue && firebaseimageurl && await axios.post('https://memorybackend-hfgz.onrender.com/addmemory',{memoryTitle:inputvalue,memoryimageUrl:firebaseimageurl})
-    .then(function (response) {
-      // Handle the successful response here
-      previewtarget.src = "insert.png";
-       console.log(response)
-       alert("your memory has been saved successfully");
-    })
-    .catch(function (error) {
-      console.error(error);
-    });
-    dialog.close();
-    window.location.reload();
-    }
-
-
-  </script>
-  <script>
-    var editImageUrl = null ;
-    const inputimageedit = document.querySelector(".input-image-edit")
-
-     inputimageedit.addEventListener('change',e=>{
-      e.preventDefault()
-      console.log(e.target.files[0])
-      const editfile = e.target.files[0];
-      
-      if (editfile) {
-        previewimageEdit.src = URL.createObjectURL(editfile);
-         // Create a reference to the Firebase Storage bucket
-      var storageRef = firebase.storage().ref();
-      
-      // Create a child reference with a unique name
-      var imageRef = storageRef.child('images/' + editfile.name);
-      
-      // Upload the image file to Firebase Storage
-      imageRef.put(editfile)
-        .then(function(snapshot) {
-            // Observe upload progress if needed
-          var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log('Upload progress: ' + progress + '%');
-
-          snapshot.ref.getDownloadURL()
-            .then(function(downloadURL) {
-              editImageUrl = downloadURL;
-            })
-        })
-        .catch(function(error) {
-          alert('Error uploading image:', error);
-        });
-      }   
-})
-
-const editMemory = async (id,title,imageUrl)=>{
-    const value = confirm("do you want to refresh?");
-    await axios.put('https://memorybackend-hfgz.onrender.com/editmemory',{id:id,title:title,imageUrl: (editImageUrl !==null)? editImageUrl:imageUrl}).then((res)=>{
-     console.log(res)
-     value && window.location.reload()
-    })
+  <script >
+      var firebaseimageurl=null
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyCk-2gz9y_gG7xNxedxfLLXK-gKp_gQ9Mc",
+        authDomain: "memoryapp-29970.firebaseapp.com",
+        projectId: "memoryapp-29970",
+        storageBucket: "memoryapp-29970.appspot.com",
+        messagingSenderId: "652759473451",
+        appId: "1:652759473451:web:6522bf8dabd2487286796e"
+      };
     
-}
-  
-</script>
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      const inputimage = document.querySelector(".input-image")
+      const previewtarget = document.querySelector(".preview") 
+    
+      inputimage.addEventListener('change',e=>{
+        e.preventDefault()
+        console.log(e.target.files[0])
+        const file = e.target.files[0];
 
-<script>
-  var parent = document.querySelector(".card-container")
-const dialogEdit = document.querySelector(".dialog-edit")
-const cancel = document.querySelector("#cancel-button")
-const canceledit = document.querySelector("#cancel-button-edit")
-const dialog = document.querySelector(".dialog-add")
-const memadd = document.querySelector(".memory-add")
-const saveEdit = document.querySelector(".savebuttonedit")
-const previewimageEdit = document.querySelector(".preview-edit")
-const previewtitleEdit = document.querySelector(".title-input-edit")
-const edithidden = document.querySelector(".edithidden")
+        if (file) {
+            previewtarget.src = URL.createObjectURL(file);
+            // Create a reference to the Firebase Storage bucket
+          var storageRef = firebase.storage().ref();
+          
+          // Create a child reference with a unique name
+          var imageRef = storageRef.child('images/' + file.name);
+          
+          // Upload the image file to Firebase Storage
+          imageRef.put(file)
+            .then(function(snapshot) {
+                // Observe upload progress if needed
+              var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              console.log('Upload progress: ' + progress + '%');
+
+              snapshot.ref.getDownloadURL()
+                .then(function(downloadURL) {
+                  console.log('Download URL:', downloadURL);
+                  // image url returned from firebase for sending to database
+                  firebaseimageurl = downloadURL;
+                })
+            })
+            .catch(function(error) {
+              alert('Error uploading image:', error);
+            });
+          }   
+    })
+    //function called after clicking save button
+    async function save(){
+        let addinput = document.getElementsByClassName("title-input")
+        let inputvalue = addinput[0].value;
+
+        let imageurl = document
+      
+        inputvalue && firebaseimageurl && await axios.post('https://memorybackend-hfgz.onrender.com/addmemory',{memoryTitle:inputvalue,memoryimageUrl:firebaseimageurl})
+        .then(function (response) {
+          // Handle the successful response here
+          previewtarget.src = "insert.png";
+          console.log(response)
+          alert("your memory has been saved successfully");
+        })
+        .catch(function (error) {
+          console.error(error);
+        });
+        dialog.close();
+        window.location.reload();
+        }
+    </script>
+
+    <!-- script for edit memory -->
+    <script>
+      var editImageUrl = null ;
+      const inputimageedit = document.querySelector(".input-image-edit")
+
+      inputimageedit.addEventListener('change',e=>{
+        e.preventDefault()
+        console.log(e.target.files[0])
+        const editfile = e.target.files[0];
+        
+        if (editfile) {
+          previewimageEdit.src = URL.createObjectURL(editfile);
+          // Create a reference to the Firebase Storage bucket
+        var storageRef = firebase.storage().ref();
+        
+        // Create a child reference with a unique name
+        var imageRef = storageRef.child('images/' + editfile.name);
+        
+        // Upload the image file to Firebase Storage
+        imageRef.put(editfile)
+          .then(function(snapshot) {
+              // Observe upload progress if needed
+            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('Upload progress: ' + progress + '%');
+
+            snapshot.ref.getDownloadURL()
+              .then(function(downloadURL) {
+                editImageUrl = downloadURL;
+              })
+          })
+          .catch(function(error) {
+            alert('Error uploading image:', error);
+          });
+        }   
+    })
+
+      // edit memory function
+      const editMemory = async (id,title,imageUrl)=>{
+          const value = confirm("do you want to refresh?");
+          await axios.put('https://memorybackend-hfgz.onrender.com/editmemory',{id:id,title:title,imageUrl: (editImageUrl !==null)? editImageUrl:imageUrl}).then((res)=>{
+          console.log(res)
+          value && window.location.reload()
+          })
+          
+      }
+    </script>
 
 
+    <!-- script for events -->
+    <script>
+      //taking reference of different dom element
+    var parent = document.querySelector(".card-container")
+    const dialogEdit = document.querySelector(".dialog-edit")
+    const cancel = document.querySelector("#cancel-button")
+    const canceledit = document.querySelector("#cancel-button-edit")
+    const dialog = document.querySelector(".dialog-add")
+    const memadd = document.querySelector(".memory-add")
+    const saveEdit = document.querySelector(".savebuttonedit")
+    const previewimageEdit = document.querySelector(".preview-edit")
+    const previewtitleEdit = document.querySelector(".title-input-edit")
+    const edithidden = document.querySelector(".edithidden")
 
-cancel.addEventListener('click',e=>{
-    console.log("cancel button clicked")
-    previewtarget.src = "insert.png";
 
-    dialog.close()
-})
+    //event listener for cancel button
+    cancel.addEventListener('click',e=>{
+        console.log("cancel button clicked")
+        previewtarget.src = "insert.png";
+        dialog.close()
+    })
 
-canceledit.addEventListener('click',e=>{
-    console.log("cancel button clicked")
-    dialogEdit.close()
-})
+    canceledit.addEventListener('click',e=>{
+        console.log("cancel button clicked")
+        dialogEdit.close()
+    })
 
-const deleteMemory = async (id,title)=>{
-console.log(id)
-const value = confirm("Are You Sure To Delete This Memory");
-const res = value && await axios.delete('https://memorybackend-hfgz.onrender.com/deletememory', {
-    params: {
-      id: id,
-      title:title
+    //function for deleting memory
+    const deleteMemory = async (id,title)=>{
+    const value = confirm("Are You Sure To Delete This Memory");
+    //making axios call for delete operation
+    const res = value && await axios.delete('https://memorybackend-hfgz.onrender.com/deletememory', {
+        params: {
+          id: id,
+          title:title
+        }
+      });
+      alert(res.data.message)
+      window.location.reload();
     }
-  });
-alert(res.data.message)
-window.location.reload();
-}
 
+    //event listener for showing dialog of add memory
+    memadd.addEventListener('click',e=>{
+        dialog.showModal()
+    })
 
+    //event listener for updating memory
+    saveEdit?.addEventListener('click',()=>{
+        const id = edithidden.textContent
+        const imageUrl = previewimageEdit.src
+        const title  = previewtitleEdit.value
+        console.log(id,imageUrl,title)
+        editMemory(id,title,imageUrl)
+        dialogEdit.close()
 
-memadd.addEventListener('click',e=>{
-    dialog.showModal()
-})
+    })
 
-saveEdit?.addEventListener('click',()=>{
-    const id = edithidden.textContent
-    const imageUrl = previewimageEdit.src
-    const title  = previewtitleEdit.value
-    console.log(id,imageUrl,title)
-    editMemory(id,title,imageUrl)
-    dialogEdit.close()
-
-})
-
-
-const getsinglememory = async(id)=>{
-    const res = await axios.get(`https://memorybackend-hfgz.onrender.com/getsinglememory/${id}`)
-    arr= res.data.data
-    previewimageEdit.src =  await res.data.data.memoryimageUrl
-    previewtitleEdit.value = await res.data.data.memoryTitle
-    edithidden.textContent = res.data.data._id
-}
-
-
-
-
-</script>
-
+    //funnction for getting single memory on passing id of that particular memory
+    const getsinglememory = async(id)=>{
+        const res = await axios.get(`https://memorybackend-hfgz.onrender.com/getsinglememory/${id}`)
+        arr= res.data.data
+        previewimageEdit.src =  await res.data.data.memoryimageUrl
+        previewtitleEdit.value = await res.data.data.memoryTitle
+        edithidden.textContent = res.data.data._id
+    }
+  </script>
 </body>
 
 
-
-
 <script src="../node_modules/axios/dist/axios.min.js"></script>
-<script>   
-    
+  <!-- script for calling all data and creating element to map those data -->
+  <script>   
     var allmemories=null
-   
+
+    //making axios call for getting all memories from database
     const getmemories=async()=>{
         await axios.get('https://memorybackend-hfgz.onrender.com/getmemories')
       .then(function (response) {
@@ -296,8 +285,12 @@ const getsinglememory = async(id)=>{
         allmemories=response.data.data;
 
         response?.data.data?.forEach((memory) => {
+
           var memoryDisplay = document.createElement("div");
           memoryDisplay.classList.add("memory-display");
+
+          var memorydisplayshadow = document.createElement("div")
+          memorydisplayshadow.classList.add("memory-display-shadow")
 
           //create image tag
           var imagediv = document.createElement("div")
@@ -322,20 +315,21 @@ const getsinglememory = async(id)=>{
               dialogEdit.showModal()
               console.log("edit button clicked")
               getsinglememory(memory._id)
-        })
+          })
 
           editButton.appendChild(editIcon);
           buttonDiv.appendChild(editButton);
 
           // Create the delete button
           var deleteButton = document.createElement("i");
-          deleteButton.classList.add("fa-solid", "fa-trash", "fa-lg");
+          deleteButton.classList.add("fa-solid", "fa-trash", "fa-lg","deletebutton");
           deleteButton?.addEventListener('click',e=>{
             console.log("delete button clicked")
             deleteMemory(memory._id,memory.memoryTitle)
             })
 
           buttonDiv.appendChild(deleteButton);
+          buttonDiv.style = "color:white"
 
           // Create the overlay div
           var overlayDiv = document.createElement("div");
@@ -348,19 +342,16 @@ const getsinglememory = async(id)=>{
 
           // Append elements to the memory display div
           memoryDisplay.appendChild(imagediv);
-          memoryDisplay.appendChild(buttonDiv);
+          memorydisplayshadow.appendChild(buttonDiv);
           overlayDiv.appendChild(titleElement);
-          memoryDisplay.appendChild(overlayDiv);
+          memorydisplayshadow.appendChild(overlayDiv);
+          memoryDisplay.appendChild(memorydisplayshadow)
           parent?.appendChild(memoryDisplay);
         });
       
       })
     }
-
-  
-
+    // calling get memories function 
     getmemories()
-   
   </script>
-
 </html>
