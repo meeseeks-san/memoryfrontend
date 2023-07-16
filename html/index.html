@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="../css/style.css">
+  
+   
+    <title>Homepage</title>
+</head>
+<body>
+    <header>
+        <div class = "navbar">
+                <div class = "navbar-left">
+                    <h3 class = " logo">
+                        ***LOGO***
+                    </h3>
+
+                </div>
+                <div class="navbar-right">
+                    <ul class = "navbar-element">
+                        <a href="#"><li id=" home">Home</li></a>
+                        <a href="#"><li id=" about"> About</li></a>
+                        <a href="#"><li id=" services ">Services</li></a>
+                        <a href="#"><li id=" contact ">Contact</li></a>
+                    </ul>
+                </div>  
+        </div>
+    </header>
+   
+    <div class = "card-container">
+         <!-- memory add card -->
+        <div class = "memory-add">
+            <img  class="avatar" src="avatar.png">
+            <i class="fa-solid fa-plus fa-2xl"></i>
+            <h2> Add Memories </h2>
+        </div>
+        <!-- memory display card -->
+        <!-- <div class = "memory-display"> -->
+            <!-- <img src="mountain.jpg" class ="memories-image">
+            <div class="button-div">
+                <a><i id = "edit-button" class="fa-solid fa-pen-to-square fa-lg"></i></a>
+                <i id = "deletebutton" class="fa-solid fa-trash fa-lg"></i>
+            </div>
+            <div class="overlay">
+                <h2 class="memory-title"></h2> 
+            </div>  -->
+            
+        <!-- </div> -->
+    </div>
+
+    <dialog  class="dialog-add">
+        <div class = "container">
+            <div class="container-image">
+                <input  type="file"  class = "input-image">
+                <img src="insert.png" class = "preview"/>
+            </div>
+            <h2>Add Title</h2>
+            <input type="text" class="title-input">
+            <div class = "dialog-icon">
+                <i id = "cancel-button" class="fa-solid fa-xmark fa-xl"></i>
+                <button onclick="save()" style="background-color: transparent;border: none;">
+                    <i id = "save-button" class="fa-solid fa-floppy-disk fa-xl"></i>
+                </button>
+                
+            </div>
+            
+        </div>
+        
+    </dialog>
+    <dialog  class="dialog-edit">
+      <div class = "container-edit">
+          <div class="container-imagee-edit">
+              <input  type="file"  class = "input-image-edit">
+              <img src="insert.png" class = "preview-edit"/>
+          </div>
+          <h2>Edit Title</h2>
+          <p class="edithidden" style="display: none;"></p>
+          <input type="text" class="title-input-edit">
+          <div class = "dialog-icon-edit">
+              <i id = "cancel-button-edit" class="fa-solid fa-xmark fa-xl"></i>
+              <button onclick="save()" style="background-color: transparent;border: none;">
+                  <i id = "save-button-edit" class="fa-solid fa-floppy-disk fa-xl savebuttonedit"></i>
+              </button>
+              
+          </div> 
+      </div>
+   </dialog>
+    <script src = "../javascript/events.js">
+
+    </script>
+
+<script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-storage.js"></script>
+
+<script >
+    var firebaseimageurl=null
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCk-2gz9y_gG7xNxedxfLLXK-gKp_gQ9Mc",
+      authDomain: "memoryapp-29970.firebaseapp.com",
+      projectId: "memoryapp-29970",
+      storageBucket: "memoryapp-29970.appspot.com",
+      messagingSenderId: "652759473451",
+      appId: "1:652759473451:web:6522bf8dabd2487286796e"
+    };
+  
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+   const inputimage = document.querySelector(".input-image")
+   const previewtarget = document.querySelector(".preview") 
+   
+   inputimage.addEventListener('change',e=>{
+    e.preventDefault()
+    console.log(e.target.files[0])
+    const file = e.target.files[0];
+
+    if (file) {
+        previewtarget.src = URL.createObjectURL(file);
+         // Create a reference to the Firebase Storage bucket
+      var storageRef = firebase.storage().ref();
+      
+      // Create a child reference with a unique name
+      var imageRef = storageRef.child('images/' + file.name);
+      
+      // Upload the image file to Firebase Storage
+      imageRef.put(file)
+        .then(function(snapshot) {
+            // Observe upload progress if needed
+          var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log('Upload progress: ' + progress + '%');
+
+          snapshot.ref.getDownloadURL()
+            .then(function(downloadURL) {
+              console.log('Download URL:', downloadURL);
+              firebaseimageurl = downloadURL;
+            })
+        })
+        .catch(function(error) {
+          alert('Error uploading image:', error);
+        });
+      }   
+})
+async function save(){
+        let addinput = document.getElementsByClassName("title-input")
+    let inputvalue = addinput[0].value;
+
+    let imageurl = document
+   
+    inputvalue && firebaseimageurl && await axios.post('http://localhost:3000/addmemory',{memoryTitle:inputvalue,memoryimageUrl:firebaseimageurl})
+    .then(function (response) {
+      // Handle the successful response here
+      previewtarget.src = "insert.png";
+       console.log(response)
+       alert("your memory has been saved successfully");
+    })
+    .catch(function (error) {
+      console.error(error);
+    });
+    dialog.close();
+    window.location.reload();
+    }
+
+
+  </script>
+  <script>
+    var editImageUrl = null ;
+     inputimageedit.addEventListener('change',e=>{
+      e.preventDefault()
+      console.log(e.target.files[0])
+      const editfile = e.target.files[0];
+      
+      if (editfile) {
+        previewimageEdit.src = URL.createObjectURL(editfile);
+         // Create a reference to the Firebase Storage bucket
+      var storageRef = firebase.storage().ref();
+      
+      // Create a child reference with a unique name
+      var imageRef = storageRef.child('images/' + editfile.name);
+      
+      // Upload the image file to Firebase Storage
+      imageRef.put(editfile)
+        .then(function(snapshot) {
+            // Observe upload progress if needed
+          var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log('Upload progress: ' + progress + '%');
+
+          snapshot.ref.getDownloadURL()
+            .then(function(downloadURL) {
+              editImageUrl = downloadURL;
+            })
+        })
+        .catch(function(error) {
+          alert('Error uploading image:', error);
+        });
+      }   
+})
+
+const editMemory = async (id,title,imageUrl)=>{
+    const value = confirm("do you want to refresh?");
+    await axios.put('http://localhost:3000/editmemory',{id:id,title:title,imageUrl: (editImageUrl !==null)? editImageUrl:imageUrl}).then((res)=>{
+     console.log(res)
+     window.location.reload()
+    })
+    
+}
+  
+</script>
+
+</body>
+
+
+
+
+<script src="../node_modules/axios/dist/axios.min.js"></script>
+<script>   
+    
+    var allmemories=null
+   
+    const getmemories=async()=>{
+        await axios.get('http://localhost:3000/getmemories')
+      .then(function (response) {
+        // Handle the successful response here
+        allmemories=response.data.data;
+
+        response?.data.data?.forEach((memory) => {
+          var memoryDisplay = document.createElement("div");
+          memoryDisplay.classList.add("memory-display");
+          var imageElement = document.createElement("img");
+          imageElement.classList.add("memories-image");
+          imageElement.src = memory.memoryimageUrl;
+
+          // Create the button div
+          var buttonDiv = document.createElement("div");
+          buttonDiv.classList.add("button-div");
+
+          // Create the edit button
+          var editButton = document.createElement("a");
+          var editIcon = document.createElement("i");
+          editIcon.classList.add("fa-solid", "fa-pen-to-square", "fa-lg" , "edit-button");
+          
+          editIcon?.addEventListener('click',e=>{
+              dialogEdit.showModal()
+              console.log("edit button clicked")
+              getsinglememory(memory._id)
+        })
+
+          editButton.appendChild(editIcon);
+          buttonDiv.appendChild(editButton);
+
+          // Create the delete button
+          var deleteButton = document.createElement("i");
+          deleteButton.classList.add("fa-solid", "fa-trash", "fa-lg");
+          deleteButton?.addEventListener('click',e=>{
+            console.log("delete button clicked")
+            deleteMemory(memory._id,memory.memoryTitle)
+            })
+
+          buttonDiv.appendChild(deleteButton);
+
+          // Create the overlay div
+          var overlayDiv = document.createElement("div");
+          overlayDiv.classList.add("overlay");
+
+          // Create the title element
+          var titleElement = document.createElement("h2");
+          titleElement.classList.add("memory-title");
+          titleElement.textContent = memory.memoryTitle;
+
+          // Append elements to the memory display div
+          memoryDisplay.appendChild(imageElement);
+          memoryDisplay.appendChild(buttonDiv);
+          overlayDiv.appendChild(titleElement);
+          memoryDisplay.appendChild(overlayDiv);
+          parent?.appendChild(memoryDisplay);
+        });
+      
+      })
+    }
+
+  
+
+    getmemories()
+   
+  </script>
+
+</html>
